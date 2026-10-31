@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratorio Quest · Señales en acción</title>
+<style>
+/* ===== Estilos (paleta de laboratorio nocturno) ===== */
+:root{--bg:#0b1030;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.15);--cy:#5ee7ff;--ye:#ffd24d;--gr:#38e08c;--re:#ff5d73;--or:#ffa63c;--tx:#eef2ff;--mu:#a9b4dd}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Roboto,sans-serif;color:var(--tx);line-height:1.45;min-height:100vh;background:radial-gradient(circle at 15% 0,#2a1b6e,transparent 50%),radial-gradient(circle at 95% 15%,#0e4a6e,transparent 45%),var(--bg)}
+.wrap{max-width:1180px;margin:auto;padding:12px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:clamp(1.3rem,3.5vw,2rem);margin:.2em 0}h1 small{display:block;font-size:.5em;color:var(--mu);font-weight:400}
+h2{font-size:1.05rem;margin:0 0 8px;color:var(--cy)}
+.hud{display:flex;gap:8px;flex-wrap:wrap}.pill{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;color:var(--tx);border:1px solid var(--line);background:rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;transition:transform .15s,background .15s}
+button:hover:not(:disabled){transform:translateY(-2px);background:rgba(255,255,255,.2)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--ye);outline-offset:2px}
+button.on{background:linear-gradient(135deg,#2bd4ff,#7b5cff);border-color:transparent;font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+canvas{width:100%;height:auto;display:block;border-radius:14px;background:linear-gradient(#10194a,#0a0f33)}
+.pipe{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.chip{flex:1;min-width:90px;text-align:center;padding:6px;border-radius:10px;background:rgba(255,255,255,.07);color:var(--mu);font-size:.85rem;border:1px solid var(--line)}
+.chip.on{background:var(--ye);color:#1a1440;font-weight:700;transform:scale(1.06)}.chip.ok{background:rgba(56,224,140,.25);color:#cfffe6}
+.enc{font:12px monospace;color:var(--mu);min-height:1.2em;word-break:break-all}
+.map{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.map button{width:54px;height:54px;font-size:.85rem;padding:2px;font-weight:700}
+.goal{background:rgba(255,210,77,.12);border:1px dashed var(--ye);border-radius:12px;padding:8px 12px;margin:8px 0}
+#mStat{margin-top:8px}#mStat .win{background:rgba(56,224,140,.15);border:1px solid var(--gr);border-radius:12px;padding:10px;animation:pop .5s}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:.9rem;color:var(--mu);margin-top:8px}
+select,input[type=text]{width:100%;font:inherit;padding:9px;border-radius:10px;border:1px solid var(--line);background:#141b4d;color:var(--tx)}
+.chs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.chs button{padding:8px 4px;font-size:.8rem}.chs b{display:block;font-size:1.4rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.chips button{padding:5px 10px;font-size:.8rem;border-radius:99px}
+.sl{display:grid;grid-template-columns:1fr auto;gap:2px 8px}.sl input{grid-column:1/3;width:100%;accent-color:var(--cy);height:26px}.sl.off{opacity:.4}.sl b{color:var(--tx)}
+#go{width:100%;font-size:1.25rem;font-weight:800;padding:16px;margin-top:12px;background:linear-gradient(135deg,#ffb92b,#ff5d73);border:0;color:#1a1440}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media(max-width:560px){.two{grid-template-columns:1fr}}
+.msg{background:rgba(0,0,0,.25);padding:10px;border-radius:10px;font-size:1.1rem;min-height:2.6em;word-break:break-word}.bad{color:var(--re);background:rgba(255,93,115,.18);border-radius:3px}
+small{color:var(--mu)}
+.barrow{display:flex;align-items:center;gap:10px;margin:10px 0}.bar{flex:1;height:18px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}.bar i,.mb i{display:block;height:100%;border-radius:99px;transition:width .6s}
+#rPct{font-size:1.8rem}.lab{font-weight:800;font-size:1.15rem}.why{white-space:pre-line;color:var(--mu);margin-top:6px}.tiny{font-size:.78rem;color:var(--mu)}
+.g{color:var(--gr)}.r{color:var(--re)}.y{color:var(--ye)}.o{color:var(--or)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left}.tw{overflow-x:auto}
+.mb{display:inline-block;width:70px;height:10px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;vertical-align:middle;margin-right:4px}
+details{background:rgba(0,0,0,.2);border-radius:12px;padding:8px 12px;margin:6px 0}summary{cursor:pointer;font-weight:700}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><div class="wrap">
+<header><h1>📡 Laboratorio Quest<small>Misiones de comunicación: lleva el mensaje hasta el receptor</small></h1>
+<div class="hud"><span class="pill" id="hRank"></span><span class="pill">⭐ <b id="hStars">0</b></span><span class="pill">🏆 <b id="hPts">0</b> pts</span></div></header>
+<div class="tabs"><button id="tM" class="on">🎮 Misiones</button><button id="tF">🧪 Laboratorio libre</button></div>
+
+<section class="card" id="mBox"><div class="map" id="map"></div>
+<h2 id="mT"></h2><div id="mS"></div><div class="goal">🎯 <b id="mG"></b></div>
+<div>Intentos: <b id="mTry">0</b> &nbsp; <button id="bHint">💡 Pista</button> <button id="bRetry">↺ Reintentar misión</button></div>
+<p class="y" id="mHint" hidden></p><div id="mStat"></div><button id="mNext" hidden class="on">Siguiente misión ▶</button></section>
+
+<div class="grid"><div>
+<section class="card"><h2>🔬 Simulación</h2><canvas id="cv" width="1200" height="450" aria-label="Simulación de la transmisión"></canvas>
+<div class="pipe"><span class="chip" id="pl0">🗣️ Emisor</span><span class="chip" id="pl1">🔐 Codifica</span><span class="chip" id="pl2">🌊 Canal</span><span class="chip" id="pl3">🔓 Decodifica</span><span class="chip" id="pl4">👂 Receptor</span></div>
+<div class="enc" id="enc"></div></section>
+<section class="card" id="res" hidden><h2>📬 Resultado</h2>
+<div class="two"><div><small>Mensaje original</small><div class="msg" id="rOrig"></div></div><div><small>Mensaje recibido</small><div class="msg" id="rRecv"></div></div></div>
+<div class="barrow"><div class="bar"><i id="rBar"></i></div><b id="rPct"></b></div><div class="lab" id="rLab"></div><div class="why" id="rWhy"></div>
+<p class="tiny">Los porcentajes son estimaciones didácticas, no mediciones físicas reales.</p><button id="bSave">💾 Guardar en el cuaderno</button></section>
+</div>
+<section class="card"><h2>🎛️ Panel de control</h2>
+<div class="row2"><div><label for="em">Emisor</label><select id="em"></select></div><div><label for="re">Receptor</label><select id="re"></select></div></div>
+<label>Canal</label><div class="chs" id="chs"></div>
+<label for="msg">Mensaje (máx. 30 letras)</label><div class="chips" id="chips"></div><input type="text" id="msg" maxlength="30">
+<div id="sl"></div>
+<button id="go">📡 Transmitir mensaje</button>
+<div class="row2" style="margin-top:8px"><button id="bRst">↩ Restablecer parámetros</button><button id="bClr">🗑 Reiniciar experimentos</button></div></section></div>
+
+<section class="card"><h2>📓 Cuaderno de experimentos</h2><div class="tw"><table><thead><tr><th>#</th><th>Canal</th><th>Mensaje</th><th>Tensión</th><th>Contacto</th><th>Ruido</th><th>Dist.</th><th>Claridad</th></tr></thead><tbody id="logB"></tbody></table></div>
+<p class="tiny">🏅 = mejor prueba. ▲▼ comparan con la prueba anterior. Cambia una sola variable entre pruebas para saber qué la mejoró o empeoró.</p></section>
+
+<section class="card"><h2>📖 Códex: la teoría detrás del juego</h2>
+<details><summary>🧩 Los componentes de la comunicación</summary><p><b>Emisor:</b> origina el mensaje. <b>Mensaje:</b> la información que quiere transmitir. <b>Canal:</b> el medio por donde viaja (hilo, aire, cable, ondas). <b>Receptor:</b> quien lo recibe e interpreta. <b>Ruido:</b> todo lo que perturba la señal.</p></details>
+<details><summary>🌊 ¿Cómo viaja una señal por un canal?</summary><p>El emisor <b>codifica</b> el mensaje en una señal física: vibración en el hilo, ondas sonoras, bits o ondas de radio. La señal recorre el canal y se debilita con la distancia. El receptor la <b>decodifica</b> para reconstruir el mensaje.</p></details>
+<details><summary>📢 ¿Qué es el ruido?</summary><p>Es cualquier perturbación que se mezcla con la señal: el viento, otras voces, interferencias eléctricas… o un dedo tocando el hilo. No siempre viene de fuera: el propio canal puede introducirlo.</p></details>
+<details><summary>🧬 Pérdida y distorsión</summary><p>Cada tramo del canal puede restar claridad. Si la señal llega débil o mezclada con ruido, el receptor pierde partes del mensaje (letras cambiadas, huecos) y puede rellenarlas mal.</p></details>
+<details><summary>🧠 Recibir una señal no es comprender el mensaje</summary><p>Una señal perfecta puede malinterpretarse si el receptor no comparte el idioma, el contexto o la clave. Y un mensaje dañado a veces se entiende porque el receptor deduce lo que falta.</p></details>
+<details><summary>❓ Preguntas para la clase</summary><ul><li>¿Por qué un hilo flojo transmite peor que uno tenso?</li><li>¿Qué pasa con la señal cuando tocamos el hilo? ¿Es ruido?</li><li>¿Por qué el teléfono digital resiste tanto ruido… hasta que de repente falla?</li><li>¿Qué canal elegirías en una tormenta, y por qué?</li><li>¿Por qué cambiar una sola variable ayuda a sacar conclusiones?</li><li>¿Cómo puede alguien entender mal un mensaje que llegó con claridad perfecta?</li></ul></details></section>
+</div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ===== 1. Canales =====
+ str: canal de hilo/cuerda (usa tensión) · tf: efecto de la tensión · c/no/d: peso del contacto, ruido y distancia
+ base: calidad máxima del canal · dig: señal digital (cae de golpe si se degrada) · dur: duración base de la animación (ms) */
+const CH={
+ tight:{n:'Vasos · hilo tenso',i:'🥫',str:1,tf:t=>t<.8?.2+t/.8*.8:1-(t-.8)*.5,c:.75,no:.3,d:.45,dur:2200,note:''},
+ loose:{n:'Vasos · hilo flojo',i:'🧵',str:1,tf:t=>.12+.9*Math.min(t,.3),c:.4,no:.3,d:.45,dur:3200,note:'El hilo flojo nunca llega a tensarse del todo, por eso transmite poco.'},
+ rope:{n:'Cuerda gruesa',i:'🧶',str:1,tf:t=>.45+.3*t,c:.5,no:.1,d:.25,dur:2800,note:'La cuerda gruesa aguanta el ruido pero transmite pocos detalles.'},
+ voice:{n:'Voz en el aire',i:'🗣️',base:.95,c:.2,no:.8,d:.85,dur:2600,note:''},
+ phone:{n:'Teléfono digital',i:'📞',dig:1,c:.3,no:.15,d:0,dur:1800,note:'La señal digital viaja en bits que se pueden corregir: resiste bien, pero si se degrada demasiado, cae de golpe.'},
+ radio:{n:'Radio señal débil',i:'📻',base:.8,c:.3,no:.75,d:.6,dur:2300,note:'Con señal débil, la radio ya parte con poca potencia.'}};
+const EM=[['🧑‍🎓','Estudiante'],['👩‍🏫','Docente'],['👥','Equipo'],['📱','Dispositivo'],['🤖','Robot']];
+const MSGS=['Llega a las tres','Trae el libro azul','Cambia la clave','Nos vemos en el patio','Cinco cajas al norte'];
+const DEF={ch:'tight',ten:40,con:20,noi:20,dis:4};
+const S={...DEF,msg:MSGS[0],em:0,re:1};
+
+/* ===== 2. Modelo de claridad (estimación didáctica) =====
+ claridad = base × tensión × (1−contacto) × (1−ruido) × (1−distancia); cada factor depende del canal. */
+function calc(s){const c=CH[s.ch],t=s.ten/100,k=s.con/100,n=s.noi/100,d=(s.dis-1)/9;
+ const m={base:c.base||1,ten:c.tf?c.tf(t):1,con:1-c.c*k,noi:1-c.no*n,dis:1-c.d*d};
+ let r=m.base*m.ten*m.con*m.noi*m.dis; if(c.dig)r=r>.65?.9+.1*r:r*1.35;
+ return{q:Math.max(.02,Math.min(1,r)),m}}
+function why(s,m){const c=CH[s.ch],R={
+ ten:s.ten<80?'La tensión es baja: el hilo flojo absorbe la vibración.':'Demasiada tensión rigidiza el hilo y pierde algo de señal.',
+ con:c.str?'Tocar el hilo amortigua la vibración y mete perturbaciones.':s.ch==='voice'?'Personas u objetos en el camino interrumpen el sonido.':'Hay interferencias en la línea.',
+ noi:'El ruido ambiental se mezcla con la señal.',dis:'A más distancia, la señal se debilita (atenuación).',base:c.base?c.note:''};
+ const L=Object.keys(R).map(k=>[k,1-m[k]]).filter(x=>x[1]>.08).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>'• '+R[x[0]]+' (−'+Math.round(x[1]*100)+' pts)');
+ if(!L.length)L.push('• ¡Condiciones ideales! La señal llega casi intacta.');
+ if(c.note&&!c.base)L.push('ℹ️ '+c.note);return L.join('\n')}
+/* Distorsión del mensaje: cuanto menor la claridad, más letras se alteran (si q>0.92 llega intacto) */
+const SIM={a:'o',e:'a',i:'l',o:'a',u:'v',s:'z',c:'k',m:'n',n:'m',t:'f',l:'i',r:'n',b:'d',d:'b',p:'q',q:'p'};
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function garble(msg,q){const r=rng(Date.now()),p=Math.max(0,.92-q)*1.15;
+ return[...msg].map(ch=>{if(ch===' '||r()>=p)return[ch,0];const u=r(),l=ch.toLowerCase();return[u<.35?'▒':u<.7&&SIM[l]?SIM[l]:u<.85?'·':'#',1]})}
+
+/* ===== 3. Misiones ===== (ok = condición de victoria sobre la lista de intentos de la misión) */
+const key=x=>[x.ch,CH[x.ch].str?x.ten:0,x.con,x.noi,x.dis];
+const M=[
+{t:'1 · Primer contacto',s:'Tu primera señal entre dos vasos. ¡Que el mensaje llegue nítido!',g:'Consigue una claridad ≥ 80 %.',set:{ch:'tight',ten:40,con:30,noi:10,dis:3},lock:['ch'],par:2,
+ h:'Un hilo bien tenso vibra mejor… y los dedos no deben tocarlo.',ok:a=>a.some(x=>x.q>=.8),
+ f:'Un hilo tenso conduce la vibración con poca pérdida. Al reducir el contacto y la distancia, el mensaje llega casi intacto.'},
+{t:'2 · ¡No toques el hilo!',s:'Un compañero no deja de tocar el hilo. ¿Cuánto daño hace?',g:'Con el MISMO mensaje, envía con contacto ≥ 60 % y con contacto ≤ 10 %: la diferencia debe ser ≥ 25 puntos.',set:{ch:'tight',ten:80,con:0,noi:10,dis:3},lock:['ch'],par:2,
+ h:'Haz un envío con el contacto alto y otro con el contacto en cero.',ok:a=>a.some(x=>x.con>=60&&a.some(y=>y.con<=10&&y.msg===x.msg&&y.q-x.q>=.25)),
+ f:'Tocar el hilo frena la vibración y mete perturbaciones: es ruido causado por el propio canal.'},
+{t:'3 · Tenso vs flojo',s:'¿De verdad importa cuánto se tensa el hilo?',g:'Mismo mensaje y condiciones parecidas (contacto, ruido y distancia casi iguales): prueba hilo tenso e hilo flojo. El tenso debe ganar por ≥ 20 puntos.',set:{ch:'tight',ten:80,con:0,noi:10,dis:3},lock:[],par:2,
+ h:'Cambia entre «Vasos · hilo tenso» y «Vasos · hilo flojo» sin tocar los demás controles.',
+ ok:a=>a.some(x=>x.ch==='tight'&&a.some(y=>y.ch==='loose'&&y.msg===x.msg&&Math.abs(x.con-y.con)<=10&&Math.abs(x.noi-y.noi)<=10&&Math.abs(x.dis-y.dis)<=1&&x.q-y.q>=.2)),
+ f:'Un hilo flojo no puede transmitir la vibración: la energía se pierde en el vaivén del hilo antes de llegar al receptor.'},
+{t:'4 · Tormenta de ruido',s:'Hay tormenta: ruido muy alto y los interlocutores están lejos.',g:'Elige el canal que logre ≥ 70 %. Los demás controles están bloqueados. Solo uno lo consigue…',set:{ch:'voice',ten:80,con:10,noi:80,dis:6},lock:['con','noi','dis'],par:2,
+ h:'¿Qué canal convierte el mensaje en bits que resisten el ruido?',ok:a=>a.some(x=>x.q>=.7),
+ f:'La señal digital se codifica en bits y el receptor puede corregir errores, por eso aguanta el ruido. La voz y la radio se mezclan con él.'},
+{t:'5 · Una sola variable',s:'El jefe del laboratorio exige método científico.',g:'Con el mismo mensaje, cambia UNA sola variable entre dos envíos seguidos y logra que la claridad mejore ≥ 15 puntos.',set:{ch:'tight',ten:30,con:40,noi:30,dis:5},lock:[],par:3,
+ h:'Envía una vez, mueve solo un control y vuelve a enviar.',
+ ok:a=>{const n=a.length;if(n<2)return 0;const p=a[n-2],l=a[n-1],kl=key(l);return p.msg===l.msg&&key(p).filter((v,i)=>v!==kl[i]).length===1&&l.q-p.q>=.15},
+ f:'Al cambiar una sola variable sabes cuál causó la mejora. Así funciona un experimento: si cambias todo a la vez, no sabes qué funcionó.'},
+{t:'6 · Reto final: 90 %',s:'Quieren una transmisión casi perfecta… sin usar tecnología digital.',g:'Alcanza una claridad ≥ 90 % sin usar el teléfono.',set:{ch:'rope',ten:50,con:30,noi:40,dis:6},lock:[],par:3,
+ h:'La cuerda gruesa no da para tanto. Busca el canal y las condiciones ideales.',ok:a=>a.some(x=>x.q>=.9&&x.ch!=='phone'),
+ f:'Un buen canal necesita buenas condiciones: tensión adecuada, sin perturbaciones, poco ruido y poca distancia. Ningún canal es el mejor en todas las situaciones.'}];
+let mode='m',mi=0,att=[],lock=[],st=[],log=[],A={run:0,done:0,p:0,seeds:[],res:null};
+const RANKS=[[14,'👑 Maestro de señales'],[8,'⚙️ Ingeniero'],[3,'🔧 Técnico'],[0,'📘 Aprendiz']];
+
+function hud(){const n=st.reduce((a,b)=>a+(b||0),0);$('hStars').textContent=n;$('hPts').textContent=n*100;$('hRank').textContent=RANKS.find(r=>n>=r[0])[1]}
+function renderM(){const m=M[mi];$('map').innerHTML=M.map((_,i)=>{const lk=i>0&&!st[i-1];return`<button data-i="${i}" ${lk?'disabled':''} class="${i===mi?'on':''}">${lk?'🔒':st[i]?'⭐'.repeat(st[i]):i+1}</button>`}).join('');
+ $('mT').textContent=m.t;$('mS').textContent=m.s;$('mG').textContent=m.g;$('mTry').textContent=att.length;$('mHint').hidden=true;$('mHint').textContent='💡 '+m.h;hud()}
+function startM(i){mi=i;att=[];const m=M[i];lock=m.lock;Object.assign(S,m.set);resetA();$('mStat').innerHTML='';$('mNext').hidden=true;sync();renderM()}
+function afterM(x){att.push(x);$('mTry').textContent=att.length;const m=M[mi];
+ if(m.ok(att)){const n=att.length,s=n<=m.par?3:n<=m.par+2?2:1;st[mi]=Math.max(st[mi]||0,s);
+  $('mStat').innerHTML=`<div class="win"><b>¡Misión superada!</b> ${'⭐'.repeat(s)} +${s*100} pts<br>${m.f}${mi===M.length-1?'<br><b>🎉 ¡Completaste todas las misiones! Sigue explorando en el laboratorio libre.</b>':''}</div>`;
+  $('mNext').hidden=mi===M.length-1;renderM();$('mTry').textContent=n}
+ else{$('mStat').textContent=att.length>=3?'Todavía no… Usa la pista 💡 y observa qué cambia en la simulación.':'Aún no se cumple el objetivo. ¡Sigue experimentando!';if(att.length>=3)$('mHint').hidden=false}}
+
+/* ===== 4. Interfaz ===== */
+const SL=[['ten','🧵 Tensión del hilo / cuerda','%',0,100],['con','☝️ Contacto o perturbación','%',0,100],['noi','🔊 Ruido ambiental','%',0,100],['dis','📏 Distancia',' m',1,10]];
+$('sl').innerHTML=SL.map(([k,l,u,a,b])=>`<div class="sl" id="w_${k}"><span>${l}</span><b id="v_${k}"></b><input type="range" id="s_${k}" min="${a}" max="${b}" aria-label="${l}"></div>`).join('');
+SL.forEach(([k])=>$('s_'+k).oninput=e=>{S[k]=+e.target.value;sync()});
+$('chs').innerHTML=Object.keys(CH).map(k=>`<button data-k="${k}"><b>${CH[k].i}</b>${CH[k].n}</button>`).join('');
+$('chs').onclick=e=>{const b=e.target.closest('button');if(b&&!lock.includes('ch')){S.ch=b.dataset.k;sync()}};
+$('em').innerHTML=$('re').innerHTML=EM.map((e,i)=>`<option value="${i}">${e[0]} ${e[1]}</option>`).join('');
+$('em').value=S.em;$('re').value=S.re;$('em').onchange=e=>S.em=+e.target.value;$('re').onchange=e=>S.re=+e.target.value;
+$('chips').innerHTML=MSGS.map(m=>`<button>${m}</button>`).join('');$('msg').value=S.msg;
+$('chips').onclick=e=>{if(e.target.tagName==='BUTTON'){$('msg').value=S.msg=e.target.textContent}};
+$('msg').oninput=e=>S.msg=e.target.value.slice(0,30);
+function sync(){SL.forEach(([k,,u])=>{const i=$('s_'+k),off=lock.includes(k)||(k==='ten'&&!CH[S.ch].str);i.value=S[k];i.disabled=off;$('w_'+k).classList.toggle('off',off);$('v_'+k).textContent=S[k]+u+(k==='ten'&&!CH[S.ch].str?' (no aplica)':'')});
+ [...$('chs').children].forEach(b=>{b.classList.toggle('on',b.dataset.k===S.ch);b.disabled=lock.includes('ch')&&b.dataset.k!==S.ch})}
+function pipe(i){for(let k=0;k<5;k++)$('pl'+k).className='chip'+(i===k?' on':k<i?' ok':'')}
+function resetA(){A={run:0,done:0,p:0,seeds:[],res:null};$('res').hidden=true;$('enc').textContent='';pipe(-1);$('go').disabled=false}
+
+/* ===== 5. Transmisión ===== */
+function go(){if(A.run)return;S.msg=($('msg').value.trim()||MSGS[0]).slice(0,30);$('msg').value=S.msg;
+ const r=calc(S);A={run:1,done:0,p:0,t0:performance.now(),seeds:Array.from({length:14},Math.random),res:{q:r.q,m:r.m,got:garble(S.msg,r.q),S:{...S}},dur:CH[S.ch].dur*(.75+(S.dis-1)/18)};
+ $('enc').textContent='Codificado: '+[...S.msg].slice(0,5).map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ')+' …';
+ $('go').disabled=true;$('res').hidden=true;$('bSave').disabled=false;if(RM)fin()}
+function fin(){A.run=0;A.done=1;A.p=1;const r=A.res,pc=Math.round(r.q*100),k=r.q>=.8?['Se entiende muy bien','g','#38e08c']:r.q>=.55?['Se entiende con esfuerzo','y','#ffd24d']:r.q>=.3?['Llega parcialmente','o','#ffa63c']:['Señal muy afectada','r','#ff5d73'];
+ $('rOrig').textContent=r.S.msg;const rc=$('rRecv');rc.textContent='';r.got.forEach(([c,b])=>{const e=document.createElement('span');e.textContent=c;if(b)e.className='bad';rc.append(e)});
+ $('rPct').textContent=pc+' %';$('rBar').style.width=pc+'%';$('rBar').style.background=k[2];$('rLab').textContent=k[0];$('rLab').className='lab '+k[1];$('rWhy').textContent=why(r.S,r.m);
+ $('res').hidden=false;$('go').disabled=false;pipe(5);if(mode==='m')afterM({...r.S,q:r.q})}
+$('go').onclick=go;
+
+/* ===== 6. Cuaderno y botones ===== */
+function renderLog(){const b=Math.max(...log.map(x=>x.q));$('logB').innerHTML=log.map((x,i)=>{const pc=Math.round(x.q*100),pv=i?Math.round(log[i-1].q*100):null,
+ dl=pv==null?'':pc>pv?`<span class="g">▲${pc-pv}</span>`:pc<pv?`<span class="r">▼${pv-pc}</span>`:'=';
+ return`<tr><td>${i+1}</td><td>${CH[x.ch].i} ${CH[x.ch].n}</td><td>${esc(x.msg)}</td><td>${CH[x.ch].str?x.ten+'%':'—'}</td><td>${x.con}%</td><td>${x.noi}%</td><td>${x.dis} m</td><td><span class="mb"><i style="width:${pc}%;background:${x.q>=.8?'#38e08c':x.q>=.55?'#ffd24d':x.q>=.3?'#ffa63c':'#ff5d73'}"></i></span>${pc}% ${x.q===b?'🏅':''} ${dl}</td></tr>`}).join('')||'<tr><td colspan="8">Aún no hay pruebas guardadas. Transmite y pulsa «Guardar en el cuaderno».</td></tr>'}
+$('bSave').onclick=()=>{if(!A.done)return;log.push({...A.res.S,q:A.res.q});$('bSave').disabled=true;renderLog()};
+$('bClr').onclick=()=>{log=[];renderLog();resetA()};
+$('bRst').onclick=()=>{Object.assign(S,mode==='m'?M[mi].set:DEF);sync()};
+$('tM').onclick=()=>{mode='m';$('tM').className='on';$('tF').className='';$('mBox').hidden=false;startM(mi)};
+$('tF').onclick=()=>{mode='f';$('tF').className='on';$('tM').className='';$('mBox').hidden=true;lock=[];resetA();sync()};
+$('map').onclick=e=>{const b=e.target.closest('button');if(b&&!b.disabled)startM(+b.dataset.i)};
+$('mNext').onclick=()=>startM(mi+1);$('bRetry').onclick=()=>startM(mi);$('bHint').onclick=()=>{$('mHint').hidden=false};
+
+/* ===== 7. Dibujo de la escena (canvas 800×300 lógicos) ===== */
+const cv=$('cv'),x=cv.getContext('2d');x.scale(1.5,1.5);
+const jr=(i,T)=>{const v=Math.sin(i*12.9898+Math.floor(T/45)*78.233)*43758.5453;return(v-Math.floor(v))*2-1};
+const em=(t,px,py,sz)=>{x.font=sz+'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';x.fillText(t,px,py)};
+function bub(cx,y,t,col){x.font='15px system-ui';const tw=Math.min(300,x.measureText(t).width)+22,bx=Math.max(6,Math.min(794-tw,cx-tw/2));
+ x.fillStyle='rgba(10,16,48,.9)';x.strokeStyle=col;x.lineWidth=2;x.beginPath();x.roundRect(bx,y-18,tw,34,12);x.fill();x.stroke();x.fillStyle='#fff';x.fillText(t,bx+tw/2,y)}
+function cup(cx,cy,fl,sh){x.save();x.translate(cx+sh,cy+sh);x.scale(fl,1);x.fillStyle='#f4f6fb';x.strokeStyle='#8fa6d0';x.lineWidth=2;
+ x.beginPath();x.moveTo(-16,-22);x.lineTo(16,-13);x.lineTo(16,13);x.lineTo(-16,22);x.closePath();x.fill();x.stroke();x.restore()}
+function draw(T0){const T=RM?0:T0,w=800,{q}=calc(S),ten=S.ten/100,con=S.con/100,noi=S.noi/100,d=(S.dis-1)/9,
+ sx=90,rx=300+d*420,by=185,pp=A.run?A.p:-1,ch=S.ch,c=CH[ch],ql=pp>=0?1+(q-1)*pp:q;
+ x.clearRect(0,0,w,300);x.textAlign='center';x.textBaseline='middle';
+ x.fillStyle='rgba(255,255,255,.06)';x.fillRect(0,by+72,w,4);
+ for(let i=0,n=Math.round(noi*80);i<n;i++){x.fillStyle=i%2?'rgba(255,166,60,.75)':'rgba(255,93,115,.6)';x.fillRect((i*97.3+T*.03*(1+i%3))%w,40+(i*53.7)%230+Math.sin(T/300+i)*6,2+i%3,2+i%2)} // ruido ambiental
+ const sk1=pp>=0&&pp<.12?Math.sin(T/25)*2:0,sk2=pp>.92?Math.sin(T/25)*4*q:0;
+ if(c.str){ // --- hilo / cuerda
+  const x0=sx+34,x1=rx-34,lo=ch==='loose',ro=ch==='rope',et=lo?Math.min(ten,.3):ten,sag=lo?46:ro?10+(1-ten)*22:4+(1-ten)*40,am=(lo?7:16)*(.35+.65*et)*(ro?1.2:1);
+  const yAt=(s,i)=>{let y=by+sag*4*s*(1-s)+jr(i,T)*noi*4+con*10*Math.exp(-((s-.5)**2)/.01); // el dedo hunde el hilo
+   if(pp>=0){const g=Math.exp(-((s-pp)**2)/.005),dm=1-.85*con*Math.exp(-((s-.5)**2)/.01);y+=am*ql*g*dm*Math.sin((s-pp)*70+T/35);
+    if(con>0&&pp>.5&&s>.5&&s<pp)y+=jr(i,T)*con*9*Math.exp(-(pp-s)*3)} // perturbaciones tras el dedo
+   return y};
+  x.lineWidth=ro?9:2.5;x.lineCap='round';x.strokeStyle=ro?'#c8924b':lo?'#8fa6d0':'#eaf2ff';x.beginPath();
+  for(let i=0;i<=90;i++){const s=i/90;i?x.lineTo(x0+(x1-x0)*s,yAt(s,i)):x.moveTo(x0,by)}x.stroke();
+  cup(x0-16,by,1,sk1);cup(x1+16,by,-1,sk2);
+  if(pp>=0){const ps=Math.min(1,pp);x.fillStyle='rgba(255,210,77,'+(.35+.65*ql)+')';x.shadowColor='#ffd24d';x.shadowBlur=14;x.beginPath();x.arc(x0+(x1-x0)*ps,yAt(ps,Math.round(ps*90)),5+5*ql,0,7);x.fill();x.shadowBlur=0}
+  if(con>.02){const fx=(x0+x1)/2,ty=by+sag+con*10;em('👇',fx,ty-22-(1-con)*50,34);
+   if(pp>.48&&pp<.8&&con>.1){x.fillStyle='#ffa63c';for(let k=0;k<4;k++)em('✦',fx+jr(k,T)*24,ty+jr(k+9,T)*18,14)}}
+ }else if(ch==='voice'){ // --- ondas sonoras: se rompen con el ruido y se apagan con la distancia
+  const L=rx-sx-40,ox=sx+14,ring=(r,a,ds)=>{x.globalAlpha=Math.max(.08,a);x.setLineDash(ds);x.beginPath();x.arc(ox,by-10,r,-.35,.35);x.stroke()};
+  x.strokeStyle='#5ee7ff';x.lineWidth=4;
+  if(pp<0)[16,30].forEach(r=>ring(r,.35,[]));else for(let k=0;k<5;k++){const r=pp*L-k*50;if(r>3&&r<=L+8)ring(r,1+(q-1)*(r/L),[16*(1-noi)+3,noi*18])}
+  x.setLineDash([]);x.globalAlpha=1;
+ }else if(ch==='phone'){ // --- paquetes de bits: los dañados se ponen rojos
+  const x0=sx+30,x1=rx-30;x.strokeStyle='rgba(255,255,255,.3)';x.lineWidth=2;x.setLineDash([6,8]);x.beginPath();x.moveTo(x0,by);x.lineTo(x1,by);x.stroke();x.setLineDash([]);
+  em('🗼',(x0+x1)/2,by-34,38);em('📱',x0-6,by,30);em('📱',x1+6,by,30);
+  if(pp>=0)for(let i=0;i<14;i++){const s=pp*1.3-i*.055;if(s>0&&s<1){const bad=A.seeds[i]<(1-q)*1.05,px=x0+(x1-x0)*s;x.fillStyle=bad?'#ff5d73':'#38e08c';x.beginPath();x.roundRect(px-10,by-10,20,20,5);x.fill();x.fillStyle='#08122e';x.font='bold 13px monospace';x.fillText(bad?'?':String(i%2),px,by+1)}}
+ }else{ // --- radio: onda portadora con estática
+  const x0=sx+30,x1=rx-30,f=pp>=0?pp:1;x.strokeStyle='#c58bff';x.lineWidth=2.5;x.globalAlpha=pp>=0?1:.35;x.beginPath();
+  for(let i=0;i<=160;i++){const s=i/160;if(s>f)break;const am=pp>=0?26*(1+(q-1)*s):3,y=by+am*Math.sin(s*50-T/80)+jr(i,T)*noi*(pp>=0?24:10);i?x.lineTo(x0+(x1-x0)*s,y):x.moveTo(x0,y)}
+  x.stroke();x.globalAlpha=1;em('📡',x0-8,by+2,32);em('📡',x1+8,by+2,32)}
+ // --- personajes, etiquetas y globos de mensaje
+ em(EM[S.em][0],sx-22+sk1,by-30,46);em(EM[S.re][0],rx+22+sk2,by-30,46);
+ x.fillStyle='#a9b4dd';x.font='13px system-ui';x.fillText(EM[S.em][1],sx-22,by+50);x.fillText(EM[S.re][1],rx+22,by+50);
+ bub(sx-22,52,S.msg||'…','#5ee7ff');bub(rx+22,52,A.done&&!A.run?A.res.got.map(g=>g[0]).join(''):'…','#ffd24d')}
+function loop(ts){if(A.run){A.p=Math.max(0,Math.min(1,(ts-A.t0)/A.dur));const p=A.p;pipe(p<.08?0:p<.2?1:p<.88?2:p<.96?3:4);if(p>=1)fin()}draw(ts);requestAnimationFrame(loop)}
+
+/* ===== 8. Inicio ===== */
+renderLog();startM(0);requestAnimationFrame(loop);
+})();
+</script></body></html>

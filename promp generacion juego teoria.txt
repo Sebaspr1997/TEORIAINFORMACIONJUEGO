@@ -1,0 +1,190 @@
+# Prompt: Juego educativo interactivo sobre la transmisión de información
+
+Actúa como un desarrollador web experto en HTML5, CSS3, JavaScript y diseño de experiencias educativas interactivas. Crea un juego didáctico en un único archivo HTML, completamente funcional, para enseñar los fundamentos de la **teoría de la información y el proceso de comunicación**, mediante una simulación visual e interactiva de cómo se transmite un mensaje a través de diferentes canales.
+
+## 1. Objetivo pedagógico
+
+El juego debe permitir que los estudiantes comprendan de manera práctica los siguientes elementos:
+
+- **Emisor:** persona o dispositivo que origina el mensaje.
+- **Mensaje:** información que se desea transmitir.
+- **Canal:** medio por el cual se transmite la información.
+- **Receptor:** persona o dispositivo que recibe el mensaje.
+- **Ruido e interferencias:** factores que pueden afectar la transmisión.
+- **Claridad de la señal:** grado en que el mensaje llega de forma comprensible.
+- **Codificación y decodificación:** representación y reconstrucción de la información transmitida.
+
+La actividad debe demostrar que las características del canal y las interferencias pueden afectar la calidad de la comunicación.
+
+## 2. Diseño visual
+
+Diseña una interfaz moderna, atractiva y educativa, con:
+
+- Colores agradables y buen contraste.
+- Diseño adaptable a ordenadores, tabletas y móviles.
+- Paneles organizados para controles, simulación y resultados.
+- Iconos, ilustraciones y elementos gráficos que faciliten la comprensión.
+- Animaciones fluidas y visualmente claras.
+- Etiquetas y explicaciones en español.
+- Botones grandes y fáciles de utilizar durante una clase.
+
+Evita una interfaz excesivamente cargada de texto. Prioriza la experimentación y la observación.
+
+## 3. Elementos configurables
+
+Permite modificar interactivamente los siguientes parámetros:
+
+### Emisor y receptor
+Ofrece listas desplegables para seleccionar diferentes emisores y receptores, como estudiantes, docentes, equipos de trabajo o dispositivos.
+
+### Mensaje
+Incluye varios mensajes de ejemplo y permite incorporar mensajes personalizados. Algunos ejemplos:
+
+- «Llega a las tres».
+- «Trae el libro azul».
+- «Cambia la clave».
+- «Nos vemos en el patio».
+- «Cinco cajas al norte».
+
+### Canal de comunicación
+Incluye las siguientes opciones:
+
+1. Dos vasos conectados mediante un hilo tenso.
+2. Dos vasos conectados mediante un hilo flojo.
+3. Una cuerda gruesa.
+4. Voz transmitida directamente por el aire.
+5. Teléfono o audio digital.
+6. Radio con señal débil.
+
+Cada canal debe tener un comportamiento visual y unas características de transmisión diferentes.
+
+### Parámetros de afectación del canal
+
+Utiliza controles deslizantes para modificar:
+
+- **Tensión del hilo o cuerda:** de 0 % a 100 %.
+- **Contacto o perturbación del canal:** de 0 % a 100 %.
+- **Ruido ambiental:** de 0 % a 100 %.
+- **Distancia entre emisor y receptor:** de 1 a 10 metros.
+
+Los cambios deben reflejarse en la simulación, no solamente en los valores numéricos.
+
+## 4. Animación dinámica de transmisión
+
+Esta es una de las características más importantes del juego.
+
+Cuando el usuario pulse el botón «Transmitir mensaje», debe ejecutarse una animación que represente el recorrido de la información desde el emisor hasta el receptor.
+
+Para el experimento de los vasos conectados por hilo:
+
+- Mostrar los dos vasos unidos por el hilo.
+- Representar la vibración inicial del vaso del emisor.
+- Mostrar un pulso animado que recorra el hilo.
+- Animar el vaso receptor cuando llegue la señal.
+- Representar las perturbaciones que aparecen al tocar el hilo.
+- Cambiar la intensidad y el comportamiento de la animación según la tensión y las interferencias.
+- Si el hilo está flojo, mostrar una transmisión visualmente menos eficiente.
+- Si el hilo está tenso y hay pocas interferencias, representar una transmisión más clara.
+
+Los demás canales también deben tener animaciones propias. Por ejemplo, ondas sonoras para la voz, una señal digital para el teléfono y ondas con interferencias para la radio.
+
+**Los controles deben influir realmente en la animación.** La tensión debe afectar el movimiento del hilo y la vibración; el contacto debe introducir perturbaciones; el ruido debe representar interferencias; y la distancia debe influir en la propagación y atenuación de la señal según el modelo didáctico utilizado.
+
+Evita crear animaciones que sean únicamente decorativas o que se comporten de forma idéntica independientemente de los parámetros.
+
+## 5. Resultado de la transmisión
+
+Después de cada envío, muestra:
+
+- El mensaje original.
+- El mensaje recibido o una representación de su posible distorsión.
+- Un porcentaje estimado de claridad.
+- Una barra visual de calidad de transmisión.
+- Una clasificación como «Se entiende muy bien», «Se entiende con esfuerzo», «Llega parcialmente» o «Señal muy afectada».
+- Una explicación breve de los factores que influyeron en el resultado.
+
+El porcentaje debe calcularse mediante una función coherente que considere el canal seleccionado y sus parámetros. El resultado no debe ser completamente aleatorio ni contradecir las condiciones configuradas.
+
+Si se representa un mensaje distorsionado, la alteración debe guardar relación con la claridad estimada. Cuando la transmisión sea buena, el mensaje debe conservarse prácticamente intacto.
+
+Aclara que los porcentajes son estimaciones didácticas, no mediciones físicas reales.
+
+## 6. Comparación de experimentos
+
+Incluye una sección donde se puedan guardar varias pruebas y compararlas.
+
+Cada prueba debe registrar:
+
+- Canal utilizado.
+- Mensaje enviado.
+- Tensión.
+- Contacto o perturbación.
+- Ruido.
+- Distancia.
+- Claridad estimada.
+
+Muestra los resultados de manera organizada para que los estudiantes identifiquen qué variables mejoraron o empeoraron la transmisión.
+
+Añade un botón para reiniciar los experimentos y otro para restablecer los parámetros iniciales.
+
+## 7. Retos didácticos
+
+Incorpora desafíos para que los estudiantes experimenten y formulen hipótesis. Por ejemplo:
+
+- Conseguir una transmisión con claridad superior al 80 %.
+- Descubrir qué sucede cuando se toca el hilo.
+- Comparar un hilo tenso con uno flojo.
+- Identificar el canal que ofrece mejores resultados bajo unas condiciones determinadas.
+- Reducir las interferencias y explicar qué cambió.
+- Mantener el mismo mensaje y modificar únicamente una variable.
+
+Después de cada reto, muestra una retroalimentación que explique por qué el resultado tiene sentido.
+
+No presentes una única respuesta universal para todos los canales: los resultados deben depender de las condiciones de la simulación.
+
+## 8. Explicaciones teóricas integradas
+
+Añade una sección que relacione lo observado con los conceptos de teoría de la información.
+
+Explica de forma sencilla:
+
+- Qué función cumple cada componente de la comunicación.
+- Cómo se transmite una señal por un canal.
+- Qué es el ruido.
+- Cómo puede producirse una pérdida o distorsión de información.
+- Por qué el receptor puede interpretar de forma incorrecta un mensaje.
+- Qué diferencia existe entre recibir una señal y comprender su significado.
+
+Incluye preguntas de reflexión que el docente pueda plantear en clase.
+
+## 9. Requisitos técnicos obligatorios
+
+- Entrega un único archivo HTML autónomo.
+- Incluye HTML, CSS y JavaScript dentro del mismo archivo.
+- No requiere instalaciones, servidores, bases de datos ni conexión a Internet.
+- Debe funcionar al abrirse directamente en Chrome, Edge y otros navegadores modernos.
+- No utilices dependencias externas obligatorias.
+- Implementa las animaciones con CSS y SVG, o con JavaScript nativo.
+- Asegura que los controles actualicen correctamente la simulación.
+- Evita variables duplicadas, errores de sintaxis, referencias a elementos inexistentes y eventos que no funcionen.
+- Verifica que todos los botones y controles tengan una función real.
+- Asegura que las animaciones puedan repetirse sin recargar la página.
+- Incluye comentarios claros en el código para facilitar futuras modificaciones.
+- Respeta las preferencias de movimiento reducido del navegador.
+- Comprueba la funcionalidad del archivo antes de entregarlo.
+
+## 10. Entrega final
+
+Genera el archivo HTML completo y listo para utilizar en clase.
+
+Antes de finalizar, comprueba que:
+
+1. El archivo abre sin errores.
+2. Se puede cambiar de canal y de mensaje.
+3. Los parámetros afectan tanto a la simulación visual como al resultado calculado.
+4. La animación recorre visualmente el canal desde el emisor hasta el receptor.
+5. La transmisión puede repetirse varias veces.
+6. Los resultados se pueden guardar y comparar.
+7. Las explicaciones teóricas son comprensibles para estudiantes principiantes.
+
+El resultado debe sentirse como un **laboratorio virtual interactivo**, no como una página estática ni como un cuestionario convencional.
